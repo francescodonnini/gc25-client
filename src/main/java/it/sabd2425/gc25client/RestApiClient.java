@@ -49,7 +49,7 @@ public class RestApiClient implements Serializable {
             }
             var mapper = new ObjectMapper();
             return mapper.readValue(response.body(), String.class);
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             throw new InternalApiException("create", e);
         }
     }
