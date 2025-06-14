@@ -6,7 +6,7 @@
 
     <groupId>it.sabd2425</groupId>
     <artifactId>gc25-client</artifactId>
-    <version>0.0.32</version>
+    <version>0.0.33</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
