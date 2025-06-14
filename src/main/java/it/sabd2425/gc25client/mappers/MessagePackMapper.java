@@ -1,4 +1,4 @@
-package it.sabd2425.sources.mappers;
+package it.sabd2425.gc25client.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.msgpack.jackson.dataformat.MessagePackFactory;

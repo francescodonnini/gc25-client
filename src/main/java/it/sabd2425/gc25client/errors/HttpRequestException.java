@@ -1,4 +1,4 @@
-package it.sabd2425.sources.errors;
+package it.sabd2425.gc25client.errors;
 
 public class HttpRequestException extends DefaultApiException {
     private final String endpoint;

@@ -1,16 +1,16 @@
-package it.sabd2425.sources;
+package it.sabd2425.gc25client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.sabd2425.sources.data.Batch;
-import it.sabd2425.sources.data.BenchConfig;
-import it.sabd2425.sources.data.QueryResult;
-import it.sabd2425.sources.data.TimestampResult;
-import it.sabd2425.sources.errors.BenchmarkCreationException;
-import it.sabd2425.sources.errors.DefaultApiException;
-import it.sabd2425.sources.errors.HttpRequestException;
-import it.sabd2425.sources.mappers.JsonMapper;
-import it.sabd2425.sources.mappers.MessagePackMapper;
+import it.sabd2425.gc25client.data.Batch;
+import it.sabd2425.gc25client.data.BenchConfig;
+import it.sabd2425.gc25client.data.QueryResult;
+import it.sabd2425.gc25client.data.TimestampResult;
+import it.sabd2425.gc25client.errors.BenchmarkCreationException;
+import it.sabd2425.gc25client.errors.DefaultApiException;
+import it.sabd2425.gc25client.errors.HttpRequestException;
+import it.sabd2425.gc25client.mappers.JsonMapper;
+import it.sabd2425.gc25client.mappers.MessagePackMapper;
 
 import java.io.IOException;
 import java.io.Serializable;

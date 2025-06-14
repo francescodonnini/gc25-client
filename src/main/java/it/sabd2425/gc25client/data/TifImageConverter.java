@@ -1,4 +1,4 @@
-package it.sabd2425.sources.data;
+package it.sabd2425.gc25client.data;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

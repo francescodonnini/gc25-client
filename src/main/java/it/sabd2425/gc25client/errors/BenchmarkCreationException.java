@@ -1,6 +1,6 @@
-package it.sabd2425.sources.errors;
+package it.sabd2425.gc25client.errors;
 
-import it.sabd2425.sources.data.BenchConfig;
+import it.sabd2425.gc25client.data.BenchConfig;
 
 public class BenchmarkCreationException extends HttpRequestException {
 
