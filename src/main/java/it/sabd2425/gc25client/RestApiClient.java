@@ -2,13 +2,13 @@ package it.sabd2425.gc25client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.sabd2425.gc25client.data.Batch;
 import it.sabd2425.gc25client.data.BenchConfig;
 import it.sabd2425.gc25client.data.QueryResult;
 import it.sabd2425.gc25client.data.TimestampResult;
 import it.sabd2425.gc25client.errors.BenchmarkCreationException;
 import it.sabd2425.gc25client.errors.DefaultApiException;
 import it.sabd2425.gc25client.errors.HttpRequestException;
+import it.sabd2425.gc25client.errors.InternalApiException;
 import it.sabd2425.gc25client.mappers.JsonMapper;
 import it.sabd2425.gc25client.mappers.MessagePackMapper;
 
@@ -50,7 +50,7 @@ public class RestApiClient implements Serializable {
             var mapper = new ObjectMapper();
             return mapper.readValue(response.body(), String.class);
         } catch (JsonProcessingException e) {
-            throw new DefaultApiException(e.getMessage());
+            throw new InternalApiException("create", e);
         }
     }
 
@@ -77,10 +77,10 @@ public class RestApiClient implements Serializable {
 
     public void start(String benchId) throws DefaultApiException {
         var response = client
-                .sendAsync(getStartRequest(benchId), HttpResponse.BodyHandlers.discarding())
+                .sendAsync(getStartRequest(benchId), HttpResponse.BodyHandlers.ofString())
                 .join();
         if (response.statusCode() != 200) {
-            throw new HttpRequestException(startEndpoint(benchId), response.statusCode(), "INTERNAL SERVER ERROR");
+            throw new HttpRequestException(startEndpoint(benchId), response.statusCode(), response.body());
         }
     }
 
@@ -101,10 +101,10 @@ public class RestApiClient implements Serializable {
             var request = getEndRequest(endpoint);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
-                throw new HttpRequestException(endpoint, response.statusCode(), "INTERNAL SERVER ERROR");
+                throw new HttpRequestException(endpoint, response.statusCode(), response.body());
             }
         } catch (IOException | InterruptedException e) {
-            throw new DefaultApiException(e.getMessage());
+            throw new InternalApiException("end", e);
         }
     }
 
@@ -121,7 +121,7 @@ public class RestApiClient implements Serializable {
         return apiEndpoint + "/end/" + benchId;
     }
 
-    public Optional<Batch> nextBatch(String benchId) throws DefaultApiException {
+    public Optional<byte[]> nextBatch(String benchId) throws DefaultApiException {
         var endpoint = nextBatchEndpoint(benchId);
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -134,13 +134,9 @@ public class RestApiClient implements Serializable {
         if (response.statusCode() == 404) {
             return Optional.empty();
         } else if (response.statusCode() == 200) {
-            try {
-                return Optional.of(MessagePackMapper.fromBytes(response.body(), Batch.class));
-            } catch (IOException e) {
-                throw new DefaultApiException(e.getMessage());
-            }
+            return Optional.of(response.body());
         } else {
-            throw new HttpRequestException(endpoint, response.statusCode(), "INTERNAL SERVER ERROR");
+            throw new HttpRequestException(endpoint, response.statusCode(), new String(response.body()));
         }
     }
 
@@ -166,7 +162,7 @@ public class RestApiClient implements Serializable {
             }
             return JsonMapper.fromString(response.body(), TimestampResult.class);
         } catch (IOException | InterruptedException e) {
-            throw new DefaultApiException(e.getMessage());
+            throw new InternalApiException("post", e);
         }
     }
 

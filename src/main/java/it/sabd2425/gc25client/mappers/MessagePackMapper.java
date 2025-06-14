@@ -11,10 +11,6 @@ public class MessagePackMapper {
     private MessagePackMapper() {
     }
 
-    public static <T> T fromBytes(byte[] bytes, Class<T> clazz) throws IOException {
-        return mapper.readValue(bytes, clazz);
-    }
-
     public static <T> byte[] toBytes(T object) throws IOException {
         return mapper.writeValueAsBytes(object);
     }
