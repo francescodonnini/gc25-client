@@ -19,7 +19,7 @@ public class QueryResult {
             @JsonProperty("query") int query,
             @JsonProperty("print_id") String printId,
             @JsonProperty("tile_id") int tileId,
-            @JsonProperty("saturated") int saturated,
+            @JsonProperty("saturated") long saturated,
             @JsonProperty("centroids") List<Centroid> centroids) {
         this.batchId = batchId;
         this.query = query;
