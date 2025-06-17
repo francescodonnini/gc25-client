@@ -35,6 +35,11 @@ public class RestApiClient implements Serializable {
         this.apiEndpoint = endpoint;
     }
 
+    public static void main(String[] args) throws DefaultApiException {
+        final var client = new RestApiClient("http://localhost:8866/api");
+        client.create(new BenchConfig("api", "name", true));
+    }
+
     public String create(BenchConfig config) throws DefaultApiException {
         try {
             var endpoint = createEndpoint();
@@ -68,8 +73,8 @@ public class RestApiClient implements Serializable {
     private String toJson(BenchConfig config) {
         var s = new StringBuilder()
                 .append("{")
-                .append(String.format("\"apitoken\": %s,", config.getApiToken()))
-                .append(String.format("\"name\": %s,", config.getName()));
+                .append(String.format("\"apitoken\": \"%s\",", config.getApiToken()))
+                .append(String.format("\"name\": \"%s\",", config.getName()));
         var o = config.getMaxBatches();
         o.ifPresent(integer -> s.append(String.format("\"max_batches\": %d,", integer)));
         return s.append(String.format("\"test\": %b", config.isTest()))
