@@ -10,7 +10,7 @@ public class QueryResult {
     private final int query;
     private final String printId;
     private final int tileId;
-    private final int saturated;
+    private final long saturated;
     private final List<Centroid> centroids;
 
     @JsonCreator
@@ -29,6 +29,18 @@ public class QueryResult {
         this.centroids = centroids;
     }
 
+    @Override
+    public String toString() {
+        return "QueryResult{" +
+                "batchId=" + batchId +
+                ", query=" + query +
+                ", printId='" + printId + '\'' +
+                ", tileId=" + tileId +
+                ", saturated=" + saturated +
+                ", centroids=" + centroids +
+                '}';
+    }
+
     public int getBatchId() {
         return batchId;
     }
@@ -45,7 +57,7 @@ public class QueryResult {
         return tileId;
     }
 
-    public int getSaturated() {
+    public long getSaturated() {
         return saturated;
     }
 

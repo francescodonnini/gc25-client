@@ -18,6 +18,15 @@ public class Centroid {
         this.count = count;
     }
 
+    @Override
+    public String toString() {
+        return "Centroid{" +
+                "x=" + x +
+                ", y=" + y +
+                ", count=" + count +
+                '}';
+    }
+
     public double getX() {
         return x;
     }

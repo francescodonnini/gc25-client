@@ -12,12 +12,14 @@ public class TimestampResult {
         this.timestamp = timestamp;
     }
 
-    public String getTimestamp() {
-        return timestamp;
-    }
-
     @Override
     public String toString() {
-        return "{timestamp=" + timestamp + '}';
+        return "TimestampResult{" +
+                "timestamp='" + timestamp + '\'' +
+                '}';
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
 }
