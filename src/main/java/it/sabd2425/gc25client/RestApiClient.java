@@ -1,6 +1,5 @@
 package it.sabd2425.gc25client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.sabd2425.gc25client.data.BenchConfig;
 import it.sabd2425.gc25client.data.QueryResult;
@@ -67,12 +66,15 @@ public class RestApiClient implements Serializable {
     }
 
     private String toJson(BenchConfig config) {
-        return "{"
-                + "\"apitoken\":\"" + config.getApiToken() + "\","
-                + "\"name\":\"" + config.getName() + "\","
-                + "\"max_batches\":" + config.getMaxBatches() + ","
-                + "\"test\":" + config.isTest()
-                + "}";
+        var s = new StringBuilder()
+                .append("{")
+                .append(String.format("\"apitoken\": %s,", config.getApiToken()))
+                .append(String.format("\"name\": %s,", config.getName()));
+        var o = config.getMaxBatches();
+        o.ifPresent(integer -> s.append(String.format("\"max_batches\": %d,", integer)));
+        return s.append(String.format("\"test\": %b", config.isTest()))
+                .append("}")
+                .toString();
     }
 
     public void start(String benchId) throws DefaultApiException {
