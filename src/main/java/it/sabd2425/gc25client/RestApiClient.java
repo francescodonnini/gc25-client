@@ -128,7 +128,7 @@ public class RestApiClient implements Serializable {
         return apiEndpoint + "/end/" + benchId;
     }
 
-    public Optional<byte[]> nextBatch(String benchId) throws DefaultApiException {
+    public Optional<byte[]> nextBatch(String benchId) throws DefaultApiException, InterruptedException {
         var endpoint = nextBatchEndpoint(benchId);
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
@@ -138,6 +138,7 @@ public class RestApiClient implements Serializable {
         var response = client
                 .sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
                 .join();
+        Thread.sleep(100);
         if (response.statusCode() == 404) {
             return Optional.empty();
         } else if (response.statusCode() == 200) {
@@ -164,6 +165,7 @@ public class RestApiClient implements Serializable {
             var endpoint = postResultEndpoint(benchId, result);
             var request = getPostResultRequest(endpoint, result);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            Thread.sleep(100);
             if (response.statusCode() != 200) {
                 throw new HttpRequestException(endpoint, response.statusCode(), response.body());
             }
