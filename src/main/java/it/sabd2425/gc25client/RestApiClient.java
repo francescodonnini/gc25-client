@@ -19,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RestApiClient implements Serializable {
@@ -165,6 +166,7 @@ public class RestApiClient implements Serializable {
             var endpoint = postResultEndpoint(benchId, result);
             var request = getPostResultRequest(endpoint, result);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            logger.info(String.format("Received %s with status code %d. Sending %s", result.getBatchId(), response.statusCode(), response.body()));
             Thread.sleep(100);
             if (response.statusCode() != 200) {
                 throw new HttpRequestException(endpoint, response.statusCode(), response.body());
