@@ -19,7 +19,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RestApiClient implements Serializable {
@@ -190,5 +189,36 @@ public class RestApiClient implements Serializable {
                 + "/result/" + result.getQuery()
                 + "/" + benchId
                 + "/" + result.getBatchId();
+    }
+
+    public byte[] getResult(String benchmark, int batchId) throws DefaultApiException {
+        var endpoint = resultEndpoint(benchmark, batchId);
+        try {
+            var request = createGetResultRequest(endpoint);
+            var response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() != 200) {
+                throw new HttpRequestException(endpoint, response.statusCode(), new String(response.body()));
+            }
+            return response.body();
+        } catch (InterruptedException | IOException e) {
+            throw new InternalApiException(endpoint, e);
+        }
+    }
+
+    private String resultEndpoint(String benchmark, int batchId) {
+        return String.format(
+                "%s/get_result/%d/%s/%d",
+                apiEndpoint,
+                0,
+                benchmark,
+                batchId);
+    }
+
+    private HttpRequest createGetResultRequest(String endpoint) {
+        return HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header(CONTENT_TYPE, "application/octet-stream")
+                .GET()
+                .build();
     }
 }
