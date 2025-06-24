@@ -30,14 +30,15 @@ public class RestApiClient implements Serializable {
             .newBuilder()
             .build();
     private final String apiEndpoint;
+    private final int delay;
 
     public RestApiClient(String endpoint) {
-        this.apiEndpoint = endpoint;
+        this(endpoint, 100);
     }
 
-    public static void main(String[] args) throws DefaultApiException {
-        final var client = new RestApiClient("http://localhost:8866/api");
-        client.create(new BenchConfig("api", "name", true));
+    public RestApiClient(String endpoint, int delayMillis) {
+        this.apiEndpoint = endpoint;
+        this.delay = delayMillis;
     }
 
     public String create(BenchConfig config) throws DefaultApiException {
@@ -138,7 +139,7 @@ public class RestApiClient implements Serializable {
         var response = client
                 .sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
                 .join();
-        Thread.sleep(100);
+        Thread.sleep(delay);
         if (response.statusCode() == 404) {
             return Optional.empty();
         } else if (response.statusCode() == 200) {
@@ -166,7 +167,7 @@ public class RestApiClient implements Serializable {
             var request = getPostResultRequest(endpoint, result);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
             logger.info(String.format("Received %s with status code %d. Sending %s", result.getBatchId(), response.statusCode(), response.body()));
-            Thread.sleep(100);
+            Thread.sleep(delay);
             if (response.statusCode() != 200) {
                 throw new HttpRequestException(endpoint, response.statusCode(), response.body());
             }
