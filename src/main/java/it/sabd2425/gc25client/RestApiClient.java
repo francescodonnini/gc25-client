@@ -139,7 +139,7 @@ public class RestApiClient implements Serializable {
         var response = client
                 .sendAsync(request, HttpResponse.BodyHandlers.ofByteArray())
                 .join();
-        Thread.sleep(delay);
+        delay();
         if (response.statusCode() == 404) {
             return Optional.empty();
         } else if (response.statusCode() == 200) {
@@ -167,7 +167,7 @@ public class RestApiClient implements Serializable {
             var request = getPostResultRequest(endpoint, result);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
             logger.info(String.format("Received %s with status code %d. Sending %s", result.getBatchId(), response.statusCode(), response.body()));
-            Thread.sleep(delay);
+            delay();
             if (response.statusCode() != 200) {
                 throw new HttpRequestException(endpoint, response.statusCode(), response.body());
             }
@@ -221,5 +221,11 @@ public class RestApiClient implements Serializable {
                 .header(CONTENT_TYPE, "application/octet-stream")
                 .GET()
                 .build();
+    }
+
+    private void delay() throws InterruptedException {
+        if (delay > 0) {
+            Thread.sleep(delay);
+        }
     }
 }
