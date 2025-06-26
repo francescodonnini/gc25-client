@@ -171,17 +171,19 @@ public class RestApiClient implements Serializable {
             if (response.statusCode() != 200) {
                 throw new HttpRequestException(endpoint, response.statusCode(), response.body());
             }
-            return JsonMapper.fromString(response.body(), TimestampResult.class);
+            final var mapper = new JsonMapper();
+            return mapper.fromString(response.body(), TimestampResult.class);
         } catch (IOException | InterruptedException e) {
             throw new InternalApiException("post", e);
         }
     }
 
     private HttpRequest getPostResultRequest(String endpoint, QueryResult result) throws IOException {
+        final var mapper = new MessagePackMapper();
         return HttpRequest.newBuilder()
                 .uri(URI.create(endpoint))
                 .header(CONTENT_TYPE, APPLICATION_MSGPACK)
-                .POST(HttpRequest.BodyPublishers.ofByteArray(MessagePackMapper.toBytes(result)))
+                .POST(HttpRequest.BodyPublishers.ofByteArray(mapper.toBytes(result)))
                 .build();
     }
 
