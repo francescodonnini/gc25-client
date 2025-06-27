@@ -104,15 +104,18 @@ public class RestApiClient implements Serializable {
     }
 
     public void end(String benchId) throws DefaultApiException {
+        var endpoint = endEndpoint(benchId);
         try {
-            var endpoint = endEndpoint(benchId);
             var request = getEndRequest(endpoint);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
                 throw new HttpRequestException(endpoint, response.statusCode(), response.body());
             }
-        } catch (IOException | InterruptedException e) {
-            throw new InternalApiException("end", e);
+        } catch (IOException e) {
+            throw new InternalApiException(endpoint, e);
+        } catch (InterruptedException e) {
+            logger.warning(e::getMessage);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -166,15 +169,18 @@ public class RestApiClient implements Serializable {
             var endpoint = postResultEndpoint(benchId, result);
             var request = getPostResultRequest(endpoint, result);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            logger.info(String.format("Received %s with status code %d. Sending %s", result.getBatchId(), response.statusCode(), response.body()));
             delay();
             if (response.statusCode() != 200) {
                 throw new HttpRequestException(endpoint, response.statusCode(), response.body());
             }
             final var mapper = new JsonMapper();
             return mapper.fromString(response.body(), TimestampResult.class);
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             throw new InternalApiException("post", e);
+        } catch (InterruptedException e) {
+            logger.warning(e::getMessage);
+            Thread.currentThread().interrupt();
+            return null;
         }
     }
 
@@ -203,8 +209,12 @@ public class RestApiClient implements Serializable {
                 throw new HttpRequestException(endpoint, response.statusCode(), new String(response.body()));
             }
             return response.body();
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             throw new InternalApiException(endpoint, e);
+        } catch (InterruptedException e) {
+            logger.warning(e::getMessage);
+            Thread.currentThread().interrupt();
+            return new byte[0];
         }
     }
 
